@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -11,16 +12,17 @@ import (
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "FilesMap",
-	Short: "A brief description of your application",
-	Long: `A longer description that spans multiple lines and likely contains
-examples and usage of using your application. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "重命名文件夹文件并生成前后对照表",
+	Long: `重命名文件夹文件并生成前后对照表,运行传入文件夹路径即可`,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
-	// Run: func(cmd *cobra.Command, args []string) { },
+	Run: func(cmd *cobra.Command, args []string) {
+		if len(args) == 0 {
+			return
+		}
+		path := args[0]
+		fmt.Println("输入了路径", path)
+	},
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
