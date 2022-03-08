@@ -1,10 +1,10 @@
 package cmd
 
 import (
+	"FilesMap/util"
 	"fmt"
-	"os"
-
 	"github.com/spf13/cobra"
+	"os"
 )
 
 
@@ -22,6 +22,9 @@ var rootCmd = &cobra.Command{
 		}
 		path := args[0]
 		fmt.Println("输入了路径", path)
+		fmt.Println("路径下所有文件", util.AllSubPath(path))
+		filesMap := generateFilesMap(path)
+		fmt.Println(filesMap)
 	},
 }
 
@@ -35,15 +38,37 @@ func Execute() {
 }
 
 func init() {
-	// Here you will define your flags and configuration settings.
-	// Cobra supports persistent flags, which, if defined here,
-	// will be global for your application.
-
-	// rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.FilesMap.yaml)")
-
-	// Cobra also supports local flags, which will only run
-	// when this action is called directly.
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+}
+
+func generateFilesMap(path string) map[string]interface{} {
+	files := util.AllSubPath(path)
+	if files == nil {
+		return nil
+	}
+
+	filesMap := make(map[string]interface{})
+
+	for i, filePath := range files {
+		oldName := util.FileFullName(filePath)
+		if oldName == ".DS_Store" {
+			continue
+		}
+		if util.IsDir(filePath) {
+			subFilesMap := generateFilesMap(filePath)
+			filesMap[oldName] = subFilesMap
+		}else {
+			_ ,suffixName := util.FileName(filePath)
+			newName := fmt.Sprintf("%d%s",i, suffixName)
+			err01 := os.Rename(filePath, path+ "/" + newName)
+			if err01 != nil {
+				fmt.Println("重命名出错:", oldName)
+				continue
+			}
+			filesMap[newName] = oldName
+		}
+	}
+	return filesMap
 }
 
 

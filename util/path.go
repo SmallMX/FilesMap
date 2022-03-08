@@ -2,6 +2,7 @@ package util
 
 import (
 	"os"
+	"path/filepath"
 )
 
 // IsPathExist 返回给定路径是否存在
@@ -27,14 +28,20 @@ func IsFile(path string) bool {
 	return  !IsDir(path)
 }
 
-//func AllSubPath(path string) []string  {
-//	var paths = make([]string, 0)
-//	if IsFile(path) {
-//		return nil
-//	}
-//
-//	pattern := strings.
-//
-//	files, err := filepath.Glob("*")
-//
-//}
+func AllSubPath(path string) []string  {
+	if !IsPathExist(path) {
+		return nil
+	}
+
+	if IsFile(path) {
+		return nil
+	}
+
+	pattern := path + "/*"
+
+	files, err := filepath.Glob(pattern)
+	if err != nil {
+		return nil
+	}
+	return  files
+}
