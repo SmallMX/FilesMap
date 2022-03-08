@@ -2,8 +2,10 @@ package cmd
 
 import (
 	"FilesMap/util"
+	"encoding/json"
 	"fmt"
 	"github.com/spf13/cobra"
+	"io/ioutil"
 	"os"
 )
 
@@ -24,7 +26,7 @@ var rootCmd = &cobra.Command{
 		fmt.Println("输入了路径", path)
 		fmt.Println("路径下所有文件", util.AllSubPath(path))
 		filesMap := generateFilesMap(path)
-		fmt.Println(filesMap)
+		saveFilesMap(path, filesMap)
 	},
 }
 
@@ -69,6 +71,22 @@ func generateFilesMap(path string) map[string]interface{} {
 		}
 	}
 	return filesMap
+}
+
+func saveFilesMap(path string, filesMap map[string]interface{})  {
+	js, err := json.Marshal(filesMap)
+	if err != nil {
+		fmt.Println("转json出错",filesMap)
+		return
+	}
+	
+	jsonPath := path + "/filesMap.json"
+
+	err02 := ioutil.WriteFile(jsonPath, js, os.ModePerm)
+	if err02 != nil {
+		fmt.Println("写入json错误", jsonPath)
+	}
+
 }
 
 
