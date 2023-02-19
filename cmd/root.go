@@ -49,8 +49,8 @@ func generateFilesMap(path string) map[string]string {
 	}
 
 	filesMap := make(map[string]string)
-
-	for i, filePath := range files {
+	index := 0
+	for _, filePath := range files {
 		oldName := util.FileFullName(filePath)
 		// if strings.Contains(oldName, "DS_Store") {
 		// 	continue
@@ -58,9 +58,10 @@ func generateFilesMap(path string) map[string]string {
 		if strings.HasPrefix(oldName, ".") {
 			continue
 		}
+		index++
 		if !util.IsDir(filePath) {
 			_, suffixName := util.FileName(filePath)
-			newName := fmt.Sprintf("%d%s", i+1, suffixName)
+			newName := fmt.Sprintf("%d%s", index, suffixName)
 			err01 := os.Rename(filePath, path+"/"+newName)
 			if err01 != nil {
 				fmt.Println("重命名出错:", oldName)
@@ -77,7 +78,7 @@ func saveFilesMap(path string, filesMap map[string]string) {
 	for key, value := range filesMap {
 		str = str + key + "--" + value + "\n"
 	}
-	textPath := path + "/filesMap.text"
+	textPath := path + "/filesMap.txt"
 
 	err := ioutil.WriteFile(textPath, []byte(str), os.ModePerm)
 	if err != nil {
